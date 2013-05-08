@@ -1,5 +1,4 @@
 
-
         // create an new instance of a pixi stage
         var stage = new PIXI.Stage(0x999, true);
         
@@ -246,23 +245,31 @@
                 
           }
         
+        var levelText;
         function addScore()
         {
-            scoreText = new PIXI.Text(score, "bold 200px arial", "white");
-            scoreText.anchor.x = 0.5;
-            scoreText.position.x =width-150;
-            scoreText.position.y = 5;
-            container.addChild(scoreText);
-            requestAnimFrame( updateScore );
+                scoreText = new PIXI.Text(score, "bold 200px arial", "white");
+                scoreText.anchor.x = 0.5;
+                scoreText.position.x =width-150;
+                scoreText.position.y = 50;
+                container.addChild(scoreText);
+                requestAnimFrame( updateScore );
+                levelText = new PIXI.Text("LEVEL 1 ", "bold 80px ms comic sans", "white");
+                levelText.position.x =width-350;
+                levelText.position.y = 5;
+                container.addChild(levelText);
         }
-            
-            
+        
+        
         function updateScore() 
         {
-            requestAnimFrame( updateScore );
-            scoreText.setText(score, "bold 200px ms comic sans", "white");
-            // render the stage   
-            renderer.render(stage);
+                requestAnimFrame( updateScore );
+                scoreText.setText(score, "bold 200px ms comic sans", "white");
+                if(score>=100){
+                        levelText.setText("LEVEL 2 ", "bold 80px ms comic sans", "white");
+                }
+                // render the stage 
+                renderer.render(stage);
         }
          
         function addLives()
@@ -468,15 +475,16 @@
 
                     if((narelashrar[i].position.y >= myplane.position.y) && (narelashrar[i].position.y <= myplane.position.y + myplane.height)&&(narelashrar[i].position.x >= myplane.position.x)&&(narelashrar[i].position.x <= myplane.position.x + myplane.width))
                     {
-                        
+                        container.removeChild(narelashrar[i]);
                         explosion.position.x=myplane.position.x;
                         explosion.position.y=myplane.position.y;
                         explosion.anchor.x= fire.anchor.y=0.5;
                         container.addChild(explosion);
                         firing.push(explosion);
-                        container.removeChild(myplane);
                         life--;
-                        createMyplane(Math.random() * width, Math.random() * window.innerHeight);
+                        mplane.position.x = Math.random() * width;
+                        myplane.position.y = Math.random() * window.innerHeight;
+                        break;
                     }
                 }
                 steps1++;

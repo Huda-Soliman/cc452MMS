@@ -1,75 +1,334 @@
-// create an new instance of a pixi stage
-        var stage = new PIXI.Stage(0x999, true);
 
+
+        // create an new instance of a pixi stage
+        var stage = new PIXI.Stage(0x999, true);
+        
         // create a renderer instance
         if(window.innerWidth>800)
         {
-            var renderer = PIXI.autoDetectRenderer(1750, 2308, null, true);
-            var width = 1000;
+            var renderer = PIXI.autoDetectRenderer(1750, window.innerHeight, null, true);
+            var width = 1750;
         }
         else
         {
-            var renderer = PIXI.autoDetectRenderer(window.innerWidth, 2308, null, true);
+            var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, null, true);
             var width = window.innerWidth;
         }
-
-
+        
         // add the renderer view element to the DOM
         document.body.appendChild(renderer.view);
         renderer.view.style.position = "absolute";
         renderer.view.style.top = "0px";
-
         renderer.view.style.left = ""+((window.innerWidth/2)-800)+"px";
+        var container = new PIXI.DisplayObjectContainer();
+        container.position.y=0;
         
-        // Determine the starting place of each frame for the moving background
         var bgDrawY1 = 0;
-        var bgDrawY2 = -2038;
-        var bgDrawY3 = 2308;
-        
-        //Number of lives
-        var lives = 3;
-
-        // create a texture from an image path
-        var texture = PIXI.Texture.fromImage("myplane.png");
-        var texture2 = PIXI.Texture.fromImage("badguy.png");
-        var texture3 = PIXI.Texture.fromImage("Rocket.png");
-        var texture4 = PIXI.Texture.fromImage("boom.png");
-        var texture5 = PIXI.Texture.fromImage("explosion.png");
-        var texture6 = PIXI.Texture.fromImage("Floor.png");
-        var texture7 = PIXI.Texture.fromImage("badGuyFire.png");
+        var bgDrawY2 = 2038;
+        var bgDrawY3 = -2308;
+        //Back();
+       
+         // Determine the starting place of each frame for the moving background
         
         
-        //Adding background to the container
+        
+           var texture6 = PIXI.Texture.fromImage("Floor.png");
+        //Adding background to the stage
         var imgSprite = new PIXI.Sprite(texture6);
-        //imgSprite.anchor.x = 0;
-        //imgSprite.anchor.y = 0;
+        imgSprite.scale.x = 1;
+        imgSprite.scale.y = 1.1;
         var imgSprite2 = new PIXI.Sprite(texture6);
-        //imgSprite2.anchor.x = 0;
-        //imgSprite2.anchor.y = 0;
+        imgSprite2.scale.x = 1;
+        imgSprite2.scale.y = 1.1;
+        
         var imgSprite3 = new PIXI.Sprite(texture6);
-        //imgSprite3.anchor.x = 0;
-        //imgSprite3.anchor.y = 0;
+        imgSprite3.scale.x = 1;
+        imgSprite3.scale.y = 1.1;
+       
+        Back();
         
-        var fire = new PIXI.Sprite(texture4);
-        fire.scale.x=fire.scale.y=0.2;
-        var explosion = new PIXI.Sprite(texture5);
-        //fire.scale.x=fire.scale.y=0.5;
-        
-        container = new PIXI.DisplayObjectContainer();
-        stage.addChild(container);
-        
-        container.addChild(imgSprite3,0,bgDrawY3);
-        container.addChild(imgSprite);
-        container.addChild(imgSprite2,0,bgDrawY2);
-        for(var i=0 ; i < 10 ; i++){
+         function Back(){
+        stage.addChild(imgSprite3,0,bgDrawY3);
+        stage.addChild(imgSprite);
+        stage.addChild(imgSprite2,0,bgDrawY2);
             requestAnimFrame( moveBg );
         }
+        
+        
+  function moveBg(){
+            bgDrawY1 += 2;
+            bgDrawY2 += 2;
+            bgDrawY3 += 2;
+            
+            if (bgDrawY1 >= 2*2308){
+                bgdrawY1 = -2308;
+            }
+            if (bgDrawY2 >= 2*2308){
+                bgDrawY2 = -2308;
+            }
+            if (bgDrawY3 >= 2*2308){
+                bgDrawY3 = -2308;
+            }
+            imgSprite.position.y = bgDrawY1;
+            imgSprite2.position.y = bgDrawY2;
+            imgSprite3.position.y = bgDrawY3;
+            renderer.render(stage);
+            requestAnimFrame(moveBg);
+        }
 
-        var myplane = new PIXI.Sprite(texture);  
-        createMyplane(Math.random() * width, Math.random() * window.innerHeight);
-        var score=0;
-        var shooting = false ;
+        // creating the textures 
+        var planeTexture= PIXI.Texture.fromImage("myplane.png");
+        var badTexture = PIXI.Texture.fromImage("badguy.png");
+        var rocketTexture = PIXI.Texture.fromImage("Rocket.png");
+        var fireTexture = PIXI.Texture.fromImage("boom.png");
+        var eplosionTexture = PIXI.Texture.fromImage("explosion.png");
+        var startTexture = PIXI.Texture.fromImage("start.png");
+        var gameoverTexture = PIXI.Texture.fromImage("over.png");
+        var resetTexture = PIXI.Texture.fromImage("reset.png");
+        var pauseTexture = PIXI.Texture.fromImage("pause.png");
+        var playTexture = PIXI.Texture.fromImage("play.png");
+        var soundText = PIXI.Texture.fromImage("sound.png");
+        var muteText = PIXI.Texture.fromImage("mute.png");
+        var lifeText = PIXI.Texture.fromImage("life.png");
+        var extraText = PIXI.Texture.fromImage("heart.png");
+        var badFireTexture = PIXI.Texture.fromImage("badGuyFire.png");
+         
+        var myplane = new PIXI.Sprite(planeTexture);        
+        var explosion = new PIXI.Sprite(eplosionTexture);
+        explosion.scale.x=explosion.scale.y=2;
+        var fire = new PIXI.Sprite(fireTexture);
+        fire.scale.x=fire.scale.y=0.5;
+        var extraLife = new PIXI.Sprite(extraText);
+        
+        
+        
+        var score=0;               // the score of the game
+        var life =3;        
+        var shooting = false;    // indicates wether the plane is shooting or not 
+        var elashrar=[];
+        var narelashrar=[];
+        var rockets = [];
+        var lives=[];
+        var firing=[];
+        var gift=[];
+        var scoreText;
+        var level =1;
+        
+        var removed =false;
+        var pause = false;
+        var endGame =false;
+        
+        
+       var resetBtn =new PIXI.Sprite(resetTexture);
+       resetBtn.setInteractive(true);
+       resetBtn.position.x=80;resetBtn.position.y=window.innerHeight-300;
+       resetBtn.mousedown = resetBtn.touchstart = function(data)
+       {
+                container.removeChild(myplane);
+                container.removeChild(scoreText);
+                life=3;   
+                reset();
+                
+        };
+            
+       var pauseBtn =new PIXI.Sprite(pauseTexture);
+       var playBtn =new PIXI.Sprite(playTexture);
+       pauseBtn.setInteractive(true);
+       playBtn.setInteractive(true);
+       pauseBtn.position.x=160;pauseBtn.position.y=window.innerHeight-400;
+       playBtn.position.x=160;playBtn.position.y=window.innerHeight-400;
+       playBtn.anchor.x= playBtn.anchor.y=0.5;
+       pauseBtn.anchor.x= pauseBtn.anchor.y=0.5;
+       pauseBtn.scale.x=pauseBtn.scale.y=0.4;
+       playBtn.scale.x=playBtn.scale.y=0.4;
+       pauseBtn.mousedown = pauseBtn.touchstart = function(data)
+       {
+                container.removeChild(pauseBtn);
+                container.addChild(playBtn);
+                myplane.setInteractive(false);
+                pause=true;
+                
+        };
+        playBtn.mousedown = playBtn.touchstart = function(data)
+       {
+           container.removeChild(playBtn);
+           container.addChild(pauseBtn);
+           myplane.setInteractive(true);
+           pause=false;
 
+       };
+       
+       var soundBtn =new PIXI.Sprite(soundText);
+       var muteBtn =new PIXI.Sprite(muteText);
+       soundBtn.setInteractive(true);
+       muteBtn.setInteractive(true);
+       soundBtn.position.x=100;soundBtn.position.y=100;
+       muteBtn.position.x=100;muteBtn.position.y=100;
+       muteBtn.anchor.x= muteBtn.anchor.y=0.5;
+       soundBtn.anchor.x= soundBtn.anchor.y=0.5;
+       soundBtn.scale.x=soundBtn.scale.y=0.4;
+       muteBtn.scale.x=muteBtn.scale.y=0.4;
+       soundBtn.mousedown = soundBtn.touchstart = function(data)
+       {
+                container.removeChild(soundBtn);
+                container.addChild(muteBtn);
+                document.getElementById("audio1").pause();
+                
+        };
+        muteBtn.mousedown = muteBtn.touchstart = function(data)
+       {
+           container.removeChild(muteBtn);
+           container.addChild(soundBtn);
+           document.getElementById("audio1").play();
+           
+
+       };
+       
+        
+         startPanel ();
+        
+        function startPanel ()
+        {
+            document.getElementById("audio1").play();
+            var start = new PIXI.Sprite(startTexture);
+            start.anchor.x= start.anchor.y=0.5;
+            start.position.x=width/2;
+            start.position.y=window.innerHeight/2;
+            start.scale.x=start.scale.y=3;
+            start.setInteractive(true);
+            stage.addChild(start);
+            
+            start.mousedown = start.touchstart = function(data)
+            {
+                stage.removeChild(start);
+                stage.addChild(container);
+                reset();
+                
+            };
+            
+        }
+        
+        function reset() 
+        { // to be called when you want to stop the timer
+                stage.removeChild(container);
+                Back();
+                container = new PIXI.DisplayObjectContainer();
+                container.position.y=0;
+                stage.addChild(container);
+                createMyplane(Math.random() * width, Math.random() * window.innerHeight);
+                setTimer();
+                container.addChild(resetBtn);
+                container.addChild(pauseBtn);
+                container.addChild(soundBtn);
+         
+           score=0;               // the score of the game
+            life =3;        
+            shooting = false;    // indicates wether the plane is shooting or not 
+            elashrar=[];
+            narelashrar=[];
+            rockets = [];
+            lives=[];
+            firing=[];
+           addScore();
+           addLives();
+           
+        }
+          function setTimer(){
+              
+                clearInterval(badTimer);
+                clearInterval(shootTimer);
+                clearInterval(removeFireTimer);
+               // clearInterval(giftTimer);
+               // var giftTimer = setInterval(Gifts,Math.random*100000+100);
+                var badTimer = setInterval(addBad, 2000/(level));
+                var shootTimer = setInterval(shoot, 40);
+                var removeFireTimer = setInterval(removeFire, 100);
+                
+          }
+        
+        function addScore()
+        {
+            scoreText = new PIXI.Text(score, "bold 200px arial", "white");
+            scoreText.anchor.x = 0.5;
+            scoreText.position.x =width-150;
+            scoreText.position.y = 5;
+            container.addChild(scoreText);
+            requestAnimFrame( updateScore );
+        }
+            
+            
+        function updateScore() 
+        {
+            requestAnimFrame( updateScore );
+            scoreText.setText(score, "bold 200px ms comic sans", "white");
+            // render the stage   
+            renderer.render(stage);
+        }
+         
+        function addLives()
+        {
+               //containerRemoved =false;
+         //adding 3 lives to the container 
+          for (var g=1;g<=3;g++)
+          {      
+         var live = new PIXI.Sprite(lifeText);
+         live.position.x=scoreText.position.x-10;
+         live.position.y=200+(150*(g));
+         live.anchor.x =  live.anchor.y =0.25;
+         live.scale.x=live.scale.y=0.15;
+         lives.push(live);
+          container.addChild(live);
+          }
+         lives=lives.reverse();
+         requestAnimFrame( lifeUpdate );
+        }
+       
+        function lifeUpdate()
+        {
+
+           requestAnimFrame( lifeUpdate );
+
+           if(lives.length==0) //gameOver
+           {
+               if (!removed){
+               var gameOver = new PIXI.Sprite(gameoverTexture);
+                   gameOver.anchor.x= gameOver.anchor.y=0.5;
+                   gameOver.scale.x= gameOver.scale.y=2;
+                   gameOver.position.x=width/2;
+                   gameOver.position.y=window.innerHeight/2;
+                   gameOver.setInteractive(true);
+
+
+                       var over = new PIXI.DisplayObjectContainer();
+                       //stage.removeChild(container);
+                       //containerRemoved=true;
+                       container.removeChild(myplane);
+                       container.removeChild(scoreText);
+                        container.removeChild(resetBtn);
+                         container.removeChild(pauseBtn);
+                       over.addChild(gameOver);
+                       stage.addChild(over);
+                       life=3;
+
+                       removed=true;
+                   gameOver.mousedown = gameOver.touchstart = function(data)
+                   {
+
+                       stage.removeChild(over);
+                       stage.addChild(container);
+                       reset();
+                       removed=false;
+                   };
+               }
+           }else if( life < lives.length )
+           {
+               lives=lives.reverse();
+               container.removeChild(lives.pop());
+               lives=lives.reverse();
+           }
+
+       }
+    
         function createMyplane(x, y)
         {
 
@@ -77,10 +336,11 @@
             myplane.setInteractive(true);
 
            // center the myplanes anchor point
-            myplane.anchor.x = 0.25;
-            myplane.anchor.y = 0.25;
+            myplane.anchor.x =  myplane.anchor.y =0.25;
+            
             myplane.scale.x = myplane.scale.y =2;
-            this.dragging = true;
+            //this.dragging = true;
+            
             // set the callbacks for when the mouse or a touch moves
             myplane.mousemove = myplane.touchmove = function(data)
             { 
@@ -114,100 +374,128 @@
             // add it to the stage
             container.addChild(myplane);
         }
-
-
-        var elashrar=[];
-        var narelashrar=[];
-        var tid = setInterval(addBad, 2000);
-
-
+        
          function addBad()
          {       
-
-                var badguy = new PIXI.Sprite(texture2);
-                var badGuysFire = new PIXI.Sprite(texture7);
-                badguy.position.x = (Math.random()* width);
+             if(!pause){
+                var badguy = new PIXI.Sprite(badTexture);
+                badguy.position.x=(Math.random()* width);
+                var badGuysFire = new PIXI.Sprite(badFireTexture);
                 badGuysFire.position.x = badguy.position.x + 10;
-
-               // badguy.scale.x = badguy.scale.y =0.75;
+                
                 badguy.anchor.x = badguy.anchor.y=0.5;
                 badGuysFire.anchor.x = badGuysFire.anchor.y=0.5;
-                //badGuysFire.scale.x = badGuysFire.scale.y = 0.5;
+                
                 elashrar.push(badguy);
                 narelashrar.push(badGuysFire);
                 container.addChild(badguy);
                 container.addChild(badGuysFire);
                 requestAnimFrame( moveBadguys );
                 requestAnimFrame( moveBadGuysFire );
+                
                 badguy.end =false;
+                badguy.Speed = Math.random()%10+2;
                 badguy.life=true;
+             }
         }
-
-        function abortTimer()
-        { // to be called when you want to stop the timer
-                clearInterval(tid);
-        }
-
-                var steps=0;
+                
+         var steps=0;
         function moveBadguys() 
         {
-
+            if(!pause)
+                {
                for (var i = 0; i < elashrar.length; i++) 
                 {
-
-                        if(steps%10==0){
-                            var xMove= - 10;
-                        }else{
-                            var xMove = 1;
+                        var xMove;
+                        if(steps%8==0){
+                              xMove= - elashrar[i].Speed*3;
+                        }else if(steps%10==0){
+                              xMove = -elashrar[i].Speed*3;
+                        }else {
+                              xMove = elashrar[i].Speed;
                         }
 
                         elashrar[i].position.x += xMove;
-                        elashrar[i].position.y += 1;
-                        narelashrar[i].position.x += xMove;
-                        narelashrar[i].position.y += 4;
+                        elashrar[i].position.y += 3;
                         if(elashrar[i].position.y == window.height ){
                            elashrar[i].end =true;
                            if(elashrar[i].life){
                                // container.removeChild(elashrar[i]);
                                elashrar[i].visible=false;
-                               elashrar[i].life=false;
+                                elashrar[i].life=false;
                            }
+                           
                         }
                         if(elashrar[i].life){
-                         if((elashrar[i].position.y > myplane.position.y-50)&&(elashrar[i].position.y < myplane.position.y+50))
+                         if((elashrar[i].position.y > myplane.position.y-100)&&(elashrar[i].position.y < myplane.position.y+100))
                             {
-                                if((elashrar[i].position.x > myplane.position.x-50)&&(elashrar[i].position.x < myplane.position.x+50))
-                                {
+                                if((elashrar[i].position.x > myplane.position.x-100)&&(elashrar[i].position.x < myplane.position.x+100))
+                            {
                                    
                                     explosion.position.x=elashrar[i].position.x;
-                                    explosion.position.y=elashrar[i].position.y;
-                                    explosion.anchor.x= fire.anchor.y=0.5;
+                                     explosion.position.y=elashrar[i].position.y;
+                                     explosion.anchor.x= fire.anchor.y=0.5;
                                     container.addChild(explosion);
                                     firing.push(explosion);
                                     elashrar[i].visible=false;
                                     elashrar[i].life=false;
-                                }
+                                    life--;
+                                    break;
+                            }
                             }
                         }
                 }
                 steps++;
                 renderer.render(stage);
                 requestAnimFrame(moveBadguys);
-
         }
-        var rockets = [];
-        var t = setInterval(shoot, 100);
+        }
+        
+        var steps1 = 0;
+        function moveBadGuysFire(){
+            if(!pause){
+                for (var i = 0; i < narelashrar.length; i++)
+                {
+                    var xMove;
+                    if((steps1%10) == 0){
+                        xMove = - 10;
+                    }
+                    else{
+                        xMove = 1;
+                    }
+                    narelashrar[i].position.x += xMove;
+                    narelashrar[i].position.y += 2;
 
-        function shoot(){
+                    if((narelashrar[i].position.y >= myplane.position.y) && (narelashrar[i].position.y <= myplane.position.y + myplane.height)&&(narelashrar[i].position.x >= myplane.position.x)&&(narelashrar[i].position.x <= myplane.position.x + myplane.width))
+                    {
+                        
+                        explosion.position.x=myplane.position.x;
+                        explosion.position.y=myplane.position.y;
+                        explosion.anchor.x= fire.anchor.y=0.5;
+                        container.addChild(explosion);
+                        firing.push(explosion);
+                        container.removeChild(myplane);
+                        life--;
+                        createMyplane(Math.random() * width, Math.random() * window.innerHeight);
+                    }
+                }
+                steps1++;
+                renderer.render(stage);
+                requestAnimFrame(moveBadGuysFire);
+            }
+        }
+        
+        function shoot()
+        {
 
-             if(shooting){
-            //var rocket = new PIXI.Sprite(texture3);
+             if(shooting && !pause){
+            //var rocket = new PIXI.Sprite(rocketTexture);
 
-                var rocket = new PIXI.Sprite(texture3);
+                var rocket = new PIXI.Sprite(rocketTexture);
                     rocket.position.x=myplane.position.x;
                     rocket.position.y=myplane.position.y;
                     rocket.setInteractive(true);
-                    rocket.scale.x = rocket.scale.y =0.3;
+                    rocket.scale.x = rocket.scale.y =0.5;
                     rocket.anchor.x = 0.5;
                     rocket.anchor.y = 0.5;
                     rocket.speedY=Math.random() *10;
@@ -215,65 +503,64 @@
                     rocket.life=true;
                     rockets.push(rocket);
                     container.addChild(rocket);    
-                    requestAnimFrame( rocketMove );
+                requestAnimFrame( rocketMove );
              }
         }
 
-        function abort() 
-        { // to be called when you want to stop the timer
-                clearInterval(t);
-
-        }
-        var firing=[];
         function rocketMove()
         {
-            for(var i=0;i<rockets.length;i++)
-            {
+            if(!pause){
+                for(var i=0;i<rockets.length;i++)
+                {
 
-                rockets[i].position.y -= (rockets[i].speedY)%6+3 ;
+                    rockets[i].position.y -= (rockets[i].speedY)%6+3 ;
 
 
-                 if(rockets[i].position.y<=0 ){
-                   rockets[i].end=true  ; 
-                   if(rockets[i].life)
-                   container.removeChild(rockets[i]);
+                     if(rockets[i].position.y<=0 ){
+                       rockets[i].end=true  ; 
+                       if(rockets[i].life)
+                       container.removeChild(rockets[i]);
 
-                }else{
+                    }else{
 
-                    for(var x=0;x<elashrar.length;x++) // checkig for "darb "
-                    {
-                        if(elashrar[x].life && rockets[i].life){
+                        for(var x=0;x<elashrar.length;x++) // checkig for "darb "
+                        {
+                            if(elashrar[x].life && rockets[i].life){
 
-                        if((rockets[i].position.y > elashrar[x].position.y-50)&&(rockets[i].position.y < elashrar[x].position.y+50))
-                            {
-                                if((rockets[i].position.x > elashrar[x].position.x-80)&&(rockets[i].position.x < elashrar[x].position.x+80))
-                            {
-                                     score++;
+                            if((rockets[i].position.y > elashrar[x].position.y-200)&&(rockets[i].position.y < elashrar[x].position.y+200))
+                                {
+                                    if((rockets[i].position.x > elashrar[x].position.x-100)&&(rockets[i].position.x < elashrar[x].position.x+100))
+                                {
+                                         score+=10;
+                                         if(score>=100){
+                                             level=3;
+                                         }
 
-                                 var fire = new PIXI.Sprite(texture4);
-                                     fire.scale.x=fire.scale.y=0.2;
-                                     fire.position.x=rockets[i].position.x;
-                                     fire.position.y=rockets[i].position.y;
-                                     fire.anchor.x= fire.anchor.y=0.5;
-                                     firing.push(fire);
+                                     var fire = new PIXI.Sprite(fireTexture);
+                                         fire.scale.x=fire.scale.y=0.5;
+                                         fire.position.x=rockets[i].position.x;
+                                         fire.position.y=rockets[i].position.y;
+                                         fire.anchor.x= fire.anchor.y=0.5;
+                                         firing.push(fire);
 
-                                    if(rockets[i].life && elashrar[x].life){
+                                        if(rockets[i].life && elashrar[x].life){
 
-                                      rockets[i].visible=false;
-                                      rockets[i].life=false;
-                                      container.addChild(fire);
-                                      elashrar[x].visible=false;
-                                      elashrar[x].life=false;
-                                    }
-                             }
+                                          rockets[i].visible=false;
+                                          rockets[i].life=false;
+                                          container.addChild(fire);
+                                          elashrar[x].visible=false;
+                                          elashrar[x].life=false;
+                                        }
+                                 }
 
-                                     break;
+                                         break;
 
+                                }
                             }
-                        }
-                     }
-                  }
+                         }
+                      }
                 }
+           
 
 
             var temp=[];
@@ -289,67 +576,17 @@
              renderer.render(stage);
              requestAnimFrame(rocketMove);
 
-
-        }
-        var f = setInterval(removeFire, 60);
-
-        function removeFire(){
-            for(var i =0 ;i<firing.length;i++)
-            {
-                container.removeChild(firing[i]);
-                firing.pop();
             }
         }
         
-        function moveBg(){
-            bgDrawY1 += 1;
-            bgDrawY2 += 1;
-            bgDrawY3 += 1;
-            if (bgDrawY1 >= 2*2308){
-                bgdrawY1 = -2308;
-            }
-            else if (bgDrawY2 >= 2*2308){
-                bgDrawY2 = -2308;
-            }
-            if (bgDrawY3 >= 2*2308){
-                bgDrawY3 = -2308;
-            }
-            imgSprite.position.y = bgDrawY1;
-            imgSprite2.position.y = bgDrawY2;
-            imgSprite3.position.y = bgDrawY3;
-            renderer.render(stage);
-            requestAnimFrame(moveBg);
-        }
-        function moveBadGuysFire(){
-            for (var i = 0; i < narelashrar.length; i++)
+        function removeFire()
+        {
+            if(firing.length>0 && !pause && !endGame)
             {
-                var xMove;
-                if((steps%10) == 0){
-                    xMove = - 10;
-                }
-                else{
-                    xMove = 1;
-                }
-                narelashrar[i].position.x += xMove;
-                narelashrar[i].position.y += 2;
-                       
-                if((narelashrar[i].position.y >= myplane.position.y) && (narelashrar[i].position.y <= myplane.position.y + myplane.height)&&(narelashrar[i].position.x >= myplane.position.x)&&(narelashrar[i].position.x <= myplane.position.x + myplane.width))
+                for(var i =0 ;i<firing.length;i++)
                 {
-                    lives-- ;
-                    explosion.position.x=myplane.position.x;
-                    explosion.position.y=myplane.position.y;
-                    explosion.anchor.x= fire.anchor.y=0.5;
-                    container.addChild(explosion);
-                    firing.push(explosion);
-                    myplane.visible = false;
-                    if(lives == 0){
-                        myplane.visible = false;
-                    }else{
-                        myplane.visible = true;
-                    }
+                    container.removeChild(firing.pop());
+
                 }
             }
-            steps++;
-            renderer.render(stage);
-            requestAnimFrame(moveBadGuysFire);
         }
